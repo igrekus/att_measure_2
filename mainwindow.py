@@ -27,28 +27,27 @@ class MainWindow(QMainWindow):
         self._ui.tabWidget.addTab(self._ui.primaryPlots, 'Основные параметры')
         self._ui.tabWidget.addTab(self._ui.secondaryPlots, 'Второстепенные параметры')
 
-        self.initDialog()
+        self._init()
 
-    def initDialog(self):
+    def _init(self):
         self._setupSignals()
         self._setupUi()
 
-        self.refreshView()
+        self._refreshView()
 
     def _setupSignals(self):
         pass
 
     def _setupUi(self):
         self._modeBeforeConnect()
+        self._refreshView()
 
-    def refreshView(self):
-        pass
-        # self.resizeTable()
+    def _refreshView(self):
+        self._resizeTable()
 
-    def resizeTable(self):
-        pass
-        # self._ui.tableMeasure.resizeRowsToContents()
-        # self._ui.tableMeasure.resizeColumnsToContents()
+    def _resizeTable(self):
+        self._ui.tableResult.resizeRowsToContents()
+        self._ui.tableResult.resizeColumnsToContents()
 
     def _modeBeforeConnect(self):
         self._ui.btnContinue.setVisible(False)
@@ -92,7 +91,7 @@ class MainWindow(QMainWindow):
 
     # event handlers
     def resizeEvent(self, event):
-        self.refreshView()
+        self._refreshView()
 
     @pyqtSlot()
     def on_btnConnect_clicked(self):
