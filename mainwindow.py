@@ -1,6 +1,8 @@
+import time
+
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSlot
 
 from domain import Domain
 from primaryplotwidget import PrimaryPlotWidget
@@ -37,7 +39,7 @@ class MainWindow(QMainWindow):
         pass
 
     def _setupUi(self):
-        self._ui.btnContinue.setVisible(False)
+        self._modeBeforeConnect()
 
     def refreshView(self):
         pass
@@ -48,39 +50,70 @@ class MainWindow(QMainWindow):
         # self._ui.tableMeasure.resizeRowsToContents()
         # self._ui.tableMeasure.resizeColumnsToContents()
 
-    def modeSearchInstruments(self):
-        self._ui.btnMeasureStop.hide()
-        self._ui.btnCheckSample.setEnabled(False)
-        self._ui.comboChip.setEnabled(False)
-        self._ui.btnMeasureStart.setEnabled(False)
+    def _modeBeforeConnect(self):
+        self._ui.btnContinue.setVisible(False)
+        self._ui.btnCheck.setEnabled(False)
+        self._ui.comboDevice.setEnabled(False)
+        self._ui.btnMeasure.setEnabled(False)
+        self._ui.btnReport.setEnabled(False)
 
-    def modeCheckSample(self):
-        self._ui.btnCheckSample.setEnabled(True)
-        self._ui.comboChip.setEnabled(True)
-        self._ui.btnMeasureStart.show()
-        self._ui.btnMeasureStart.setEnabled(False)
-        self._ui.btnMeasureStop.hide()
-        analyzer, progr = self._instrumentManager.getInstrumentNames()
-        self._ui.editAnalyzer.setText(analyzer)
-        self._ui.editProg.setText(progr)
+    def _modeBeforeSamplePresent(self):
+        self._ui.btnCheck.setEnabled(True)
+        self._ui.comboDevice.setEnabled(True)
+        self._ui.btnMeasure.setEnabled(False)
+        self._ui.btnMeasure.setVisible(True)
+        self._ui.btnContinue.setVisible(False)
+        self._ui.btnReport.setEnabled(False)
 
-    def modeReadyToMeasure(self):
-        self._ui.btnCheckSample.setEnabled(False)
-        self._ui.comboChip.setEnabled(False)
-        self._ui.btnMeasureStart.setEnabled(True)
+        self._ui.editAnalyzer.setText(self._domain.analyzerName)
+        self._ui.editProgr.setText(self._domain.programmerName)
 
-    def modeMeasureInProgress(self):
-        self._ui.btnCheckSample.setEnabled(False)
-        self._ui.comboChip.setEnabled(False)
-        self._ui.btnMeasureStart.setVisible(False)
-        self._ui.btnMeasureStop.setVisible(True)
+    def _modeBeforeMeasure(self):
+        self._ui.btnCheck.setEnabled(False)
+        self._ui.comboDevice.setEnabled(False)
+        self._ui.btnMeasure.setEnabled(True)
+        self._ui.btnContinue.setVisible(False)
+        self._ui.btnReport.setEnabled(False)
 
-    def modeMeasureFinished(self):
-        self._ui.btnCheckSample.setEnabled(False)
-        self._ui.comboChip.setEnabled(False)
-        self._ui.btnMeasureStart.setVisible(False)
-        self._ui.btnMeasureStop.setVisible(True)
+    def _modeMeasureInProgress(self):
+        self._ui.btnCheck.setEnabled(False)
+        self._ui.comboDevice.setEnabled(False)
+        self._ui.btnMeasure.setEnabled(False)
+        self._ui.btnContinue.setVisible(False)
+        self._ui.btnReport.setEnabled(False)
+
+    def _modeAfterMeasure(self):
+        self._ui.btnCheck.setEnabled(False)
+        self._ui.comboDevice.setEnabled(True)
+        self._ui.btnMeasure.setEnabled(False)
+        self._ui.btnMeasure.setVisible(False)
+        self._ui.btnContinue.setVisible(True)
+        self._ui.btnReport.setEnabled(True)
 
     # event handlers
     def resizeEvent(self, event):
         self.refreshView()
+
+    @pyqtSlot()
+    def on_btnConnect_clicked(self):
+        print('connect')
+        time.sleep(1)
+        self._modeBeforeSamplePresent()
+
+    @pyqtSlot()
+    def on_btnCheck_clicked(self):
+        print('check')
+        time.sleep(1)
+        self._modeBeforeMeasure()
+
+    @pyqtSlot()
+    def on_btnMeasure_clicked(self):
+        print('measure')
+        time.sleep(1)
+        self._modeMeasureInProgress()
+        time.sleep(1)
+        self._modeAfterMeasure()
+
+    def on_btnContinue_clicked(self):
+        print('continue')
+        self._modeBeforeSamplePresent()

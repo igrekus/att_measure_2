@@ -360,11 +360,13 @@ class Domain(QObject):
 
     @property
     def programmerName(self):
-        return str(self._instruments._programmer)
+        return 'programmer'
+        # return str(self._instruments._programmer)
 
     @property
     def analyzerName(self):
-        return str(self._instruments._analyzer)
+        return 'analyzer'
+        # return str(self._instruments._analyzer)
 
     @property
     def cutoffMag(self):
