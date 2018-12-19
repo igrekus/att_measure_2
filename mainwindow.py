@@ -5,7 +5,9 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import Qt, pyqtSlot
 
 from domain import Domain
+from mytools.mapmodel import MapModel
 from primaryplotwidget import PrimaryPlotWidget
+from resultmodel import ResultModel
 from secondaryplotwidget import SecondaryPlotWidget
 
 
@@ -39,6 +41,9 @@ class MainWindow(QMainWindow):
         pass
 
     def _setupUi(self):
+        self._ui.comboDevice.setModel(MapModel(parent=self, data={0: '1324ПМ1 (0,25 дБ)', 1: '1324ПМ2 (0,5 дБ)'}))
+        self._ui.tableResult.setModel(ResultModel(parent=self, domain=self._domain))
+
         self._modeBeforeConnect()
         self._refreshView()
 
