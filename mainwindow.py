@@ -118,6 +118,17 @@ class MainWindow(QMainWindow):
         time.sleep(1)
         self._modeAfterMeasure()
 
+    @pyqtSlot()
     def on_btnContinue_clicked(self):
         print('continue')
         self._modeBeforeSamplePresent()
+
+    @pyqtSlot()
+    def on_btnReport_clicked(self):
+        print('report')
+
+    @pyqtSlot(str)
+    def on_editAnalyzerAddr_textChanged(self, text):
+        self._domain.analyzerAddress = text
+
+
