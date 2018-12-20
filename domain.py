@@ -1,8 +1,7 @@
-import time
 from collections import defaultdict
-
-import serial
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, pyqtSlot, QThreadPool
+
+from instrumentcontroller import InstrumentController
 
 # MOCK
 def_mock = True
@@ -51,7 +50,7 @@ class Domain(QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self._instruments = InstrumentManager()
+        self._instruments = InstrumentController()
         self.pool = QThreadPool()
 
         self._code = 0
@@ -92,7 +91,7 @@ class Domain(QObject):
         self.harms.clear()
         self.harm_deltas.clear()
 
-    def findInstruments(self):
+    def connectInstruments(self):
         print('find instruments')
         return self._instruments.find()
 
@@ -219,18 +218,15 @@ class Domain(QObject):
 
     @analyzerAddress.setter
     def analyzerAddress(self, addr):
-        print(f'set analyzer address {addr}')
         self._instruments.analyzer_addr = addr
 
     @property
     def programmerName(self):
-        return 'programmer'
-        # return str(self._instruments._programmer)
+        return str(self._instruments._programmer)
 
     @property
     def analyzerName(self):
-        return 'analyzer'
-        # return str(self._instruments._analyzer)
+        return str(self._instruments._analyzer)
 
     @property
     def cutoffMag(self):

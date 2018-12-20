@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
         self._ui.btnContinue.setVisible(False)
         self._ui.btnReport.setEnabled(False)
 
-        self._ui.editAnalyzer.setText(self._domain.analyzerName)
+        self._ui.editAnalyzer.setText(f'{self._domain.analyzerName} at {self._domain.analyzerAddress}')
         self._ui.editProgr.setText(self._domain.programmerName)
 
     def _modeBeforeMeasure(self):
@@ -100,8 +100,7 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_btnConnect_clicked(self):
-        print('connect')
-        time.sleep(1)
+        self._domain.connectInstruments()
         self._modeBeforeSamplePresent()
 
     @pyqtSlot()
