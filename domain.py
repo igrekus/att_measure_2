@@ -1,8 +1,7 @@
-import time
 from collections import defaultdict
-
-import serial
 from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, pyqtSlot, QThreadPool
+
+from instrumentcontroller import InstrumentController
 
 # MOCK
 def_mock = True
@@ -20,142 +19,6 @@ class MeasureContext:
     def __exit__(self, *args):
         print('\nexit analyzer context\n')
         self._model._analyzer.finish()
-
-
-class InstrumentManager:
-
-    def __init__(self):
-        self._analyzer_addr = 'TCPIP::192.168.0.3::INSTR'
-
-        self._programmer = None
-        self._analyzer = None
-
-        self._available_ports = list()
-
-        self._harmonic = 1
-
-    def _find_ports(self):
-        for port in [f'COM{i+1}' for i in range(256)]:
-            try:
-                s = serial.Serial(port)
-                s.close()
-                self._available_ports.append(port)
-            except (OSError, serial.SerialException):
-                pass
-
-    def _find_spi_port(self):
-        for port in self._available_ports:
-            s = serial.Serial(port=port, baudrate=9600, timeout=0.5)
-            if s.is_open:
-                s.write(b'<n>')
-                ans = s.read(9)
-                s.close()
-                if b'SPI' in ans:
-                    return port
-        else:
-            return ''
-
-    def _find_parallel_port(self):
-        for port in self._available_ports:
-            s = serial.Serial(port=port, baudrate=9600, timeout=0.5)
-            if s.is_open:
-                s.write(b'#NAME')
-                ans = s.read(9)
-                s.close()
-                if b'ARDUINO' in ans:
-                    return port
-        else:
-            return ''
-
-    def _find_programmer(self):
-        if def_mock:
-            from arduino.arduinospimock import ArduinoSpiMock
-            self._programmer = ArduinoSpiMock()
-            return
-
-        port = self._find_parallel_port()
-        if port:
-            from arduino.arduinoparallel import ArduinoParallel
-            self._programmer = ArduinoParallel(port=port, baudrate=9600, parity=serial.PARITY_NONE, bytesize=8,
-                                               stopbits=serial.STOPBITS_ONE, timeout=0.5)
-            return
-
-        port = self._find_spi_port()
-        if port:
-            from arduino.arduinospi import ArduinoSpi
-            self._programmer = ArduinoSpi(port=port, baudrate=115200, parity=serial.PARITY_NONE, bytesize=8,
-                                          stopbits=serial.STOPBITS_ONE, timeout=1)
-
-    def _find_analyzer(self):
-        if def_mock:
-            from instr.obzor304mock import Obzor304Mock
-            self._analyzer = Obzor304Mock(self.analyzer_addr)
-            return
-
-        from instr.obzor304 import Obzor304
-        try:
-            self._analyzer = Obzor304(self._analyzer_addr)
-        except Exception as ex:
-            print(f'analyzer error: {ex}')
-
-    def find(self):
-        self._find_ports()
-        print(f'available ports: {" ".join(self._available_ports)}')
-
-        print('find programmer')
-        self._find_programmer()
-        print(f'programmer: {self._programmer}')
-
-        print('find analyzer')
-        try:
-            self._find_analyzer()
-        except Exception as ex:
-            print(ex)
-        print(f'analyzer: {self._analyzer}')
-
-        return self._programmer and self._analyzer
-
-    def measure(self, code):
-        if not self._programmer.set_lpf_code(code):
-            print(f'error setting code: {code}')
-            return [], []
-        time.sleep(0.7)
-        return self._analyzer.measure(code)
-
-    @property
-    def harmonic(self):
-        return self._harmonic
-
-    @harmonic.setter
-    def harmonic(self, value):
-        # SENSe<Ch>:OFFSet[:STATe] <bool>
-
-        # SENS:OFFS:PORT:DATA?
-        # SENSe<Ch>:OFFSet:PORT<Pt>[:FREQuency]:DATA?
-        # Считывает массив частот точек измерения порта Pt когда функция смещения частоты активна и тип смещения выбран "PORT" (только запрос)
-
-        # SENS:OFFS:PORT:MULT
-        # SENSe<Ch>:OFFSet:PORT<Pt>[:FREQuency]:MULTiplier <numeric>
-        # SENSe<Ch>:OFFSet:PORT<Pt>[:FREQuency]:MULTiplier?
-        # Описание
-        # Устанавливает или считывает множитель базового частотного
-        # диапазона для получения частоты порта Pt, когда функция
-        # смещения частоты включена и тип смещения выбран "PORT".
-        # (команда/запрос)
-
-        # 1 - вкл
-        # 2 - тип порт1 -> порт2
-        # 3 - порт2: множитель x2, x3
-
-        print('>>> IM set harmonic', value)
-
-    @property
-    def analyzer_addr(self):
-        return self._analyzer_addr
-
-    @analyzer_addr.setter
-    def analyzer_addr(self, addr):
-        self._analyzer_addr = addr
 
 
 class Task(QRunnable):
@@ -187,7 +50,7 @@ class Domain(QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self._instruments = InstrumentManager()
+        self._instruments = InstrumentController()
         self.pool = QThreadPool()
 
         self._code = 0
@@ -228,7 +91,7 @@ class Domain(QObject):
         self.harms.clear()
         self.harm_deltas.clear()
 
-    def findInstruments(self):
+    def connectInstruments(self):
         print('find instruments')
         return self._instruments.find()
 
@@ -355,7 +218,6 @@ class Domain(QObject):
 
     @analyzerAddress.setter
     def analyzerAddress(self, addr):
-        print(f'set analyzer address {addr}')
         self._instruments.analyzer_addr = addr
 
     @property
