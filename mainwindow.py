@@ -1,7 +1,7 @@
 import time
 
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from PyQt5.QtCore import Qt, pyqtSlot
 
 from domain import Domain
@@ -106,13 +106,17 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_btnConnect_clicked(self):
-        self._domain.connectInstruments()
+        if not self._domain.connect():
+            QMessageBox.information(self, 'Ошибка',
+                                    'Не удалось найти инструменты, проверьте подключение.\nПодробности в логах.')
         self._modeBeforeSamplePresent()
 
     @pyqtSlot()
     def on_btnCheck_clicked(self):
-        print('check')
-        time.sleep(1)
+        if not self._domain.check():
+            QMessageBox.information(self, 'Ошибка',
+                                    'Образец не найден, проверьте стенд.')
+            return False
         self._modeBeforeMeasure()
 
     @pyqtSlot()
