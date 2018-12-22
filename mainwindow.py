@@ -98,6 +98,12 @@ class MainWindow(QMainWindow):
     def resizeEvent(self, event):
         self._refreshView()
 
+    @pyqtSlot(int)
+    def on_comboDevice_currentIndexChanged(self, index):
+        model =  self._ui.tableResult.model()
+        if model:
+            self._ui.tableResult.model().init(index)
+
     @pyqtSlot()
     def on_btnConnect_clicked(self):
         self._domain.connectInstruments()
