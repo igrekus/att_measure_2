@@ -36,7 +36,7 @@ class ResultModel(QAbstractTableModel):
         self._data.clear()
         self.endRemoveRows()
 
-    def initModel(self, chip: int):
+    def init(self, chip: int):
         self.beginResetModel()
         self._data = {
             0: list(self._labels),
@@ -80,4 +80,4 @@ class ResultModel(QAbstractTableModel):
 
     @pyqtSlot(int)
     def updateModel(self, chip):
-        self.initModel(chip)
+        self.init(chip)
