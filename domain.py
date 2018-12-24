@@ -22,14 +22,13 @@ class MeasureContext:
 
 class Task(QRunnable):
 
-    def __init__(self, end, fn, *args, **kwargs):
+    def __init__(self, fn, end, *args, **kwargs):
         super().__init__()
-        self.end = end
         self.fn = fn
+        self.end = end
         self.args = args
         self.kwargs = kwargs
 
-    @pyqtSlot()
     def run(self):
         self.fn(*self.args, **self.kwargs)
         self.end()
