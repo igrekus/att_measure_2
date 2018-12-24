@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         self._domain.measureFinished.connect(self.on_measurementFinished)
 
     def _setupUi(self):
-        self._ui.comboDevice.setModel(MapModel(parent=self, data={0: '1324ПМ1 (0,25 дБ)', 1: '1324ПМ2 (0,5 дБ)'}))
+        self._ui.comboDevice.setModel(MapModel(parent=self, data={0: '1324ПМ1У (0,25 дБ)', 1: '1324ПМ2У (0,5 дБ)'}))
         self._ui.tableResult.setModel(ResultModel(parent=self, domain=self._domain))
 
         self._modeBeforeConnect()
