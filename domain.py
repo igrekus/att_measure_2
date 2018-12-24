@@ -65,9 +65,8 @@ class Domain(QObject):
 
         chan = 1
         points = 51
-        # pass_threshold = -90
-        pass_threshold = -15
-        self._samplePresent = False
+        pass_threshold = -90
+        # pass_threshold = -15
 
         # TODO move to instrumentcontroller
 
