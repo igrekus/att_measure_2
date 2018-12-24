@@ -54,36 +54,9 @@ class Domain(QObject):
     def check(self):
         print('check sample presence')
 
-        chan = 1
-        points = 51
         pass_threshold = -90
-        # pass_threshold = -15
-
-        # TODO move to instrumentcontroller
-
-        self._instruments._programmer.set_lpf_code(0b100000)
-        self._instruments._analyzer.reset()
-        # TODO load calibration here
-        _, meas_name = self._instruments._analyzer.calc_create_measurement(chan=chan, meas_name='check_s21', meas_type='S21')   # TODO add measurement parameter const
-        self._instruments._analyzer.display_create_window(window=1)
-        self._instruments._analyzer.display_measurement(window=1, trace=1, meas_name=meas_name)
-        self._instruments._analyzer.trigger_source('MANual')
-        print(self._instruments._analyzer.operation_complete)   # TODO wait for OPC
-        self._instruments._analyzer.wait()
-        self._instruments._analyzer.trigger_point_mode(chan=chan, mode='OFF')
-        self._instruments._analyzer.source_power(chan=chan, port=1, value=-5)
-        self._instruments._analyzer.sense_fom_sweep_type(chan=chan, range=1, type='linear')
-        self._instruments._analyzer.sense_sweep_points(chan=chan, points=points)
-        self._instruments._analyzer.sense_freq_start(chan=chan, value=10, unit='MHz')
-        self._instruments._analyzer.sense_freq_stop(chan=chan, value=8, unit='GHz')
-        self._instruments._analyzer.trigger_initiate()
-        self._instruments._analyzer.wait()
-        self._instruments._analyzer.calc_parameter_select(chan=chan, name=meas_name)
-        self._instruments._analyzer.format('ASCII')
-
-        res = self._instruments._analyzer.calc_formatted_data(chan=chan)
-
-        avg = reduce(lambda a, b: a + b, map(float, res.split(',')), 0) / points
+        points = 51
+        avg = reduce(lambda a, b: a + b, map(float, self._instruments.test_sample(points=51).split(',')), 0) / points
 
         print(f'>>> avg level: {avg}')
 

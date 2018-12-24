@@ -5,6 +5,10 @@ import serial
 is_mock = True
 
 
+def invert_bits(value):
+    return value ^ 0b111111
+
+
 class InstrumentController:
 
     def __init__(self):
@@ -113,6 +117,34 @@ class InstrumentController:
             print(f'error setting code: {code}')
             return [], []
         return self._analyzer.measure(code)
+
+    def test_sample(self, points=51):
+        chan = 1
+        window = 1
+        trace = 1
+        port = 1
+        range_ = 1
+
+        self._programmer.set_lpf_code(invert_bits(0b100000))
+        self._analyzer.reset()
+        # TODO load calibration here
+        _, meas_name = self._analyzer.calc_create_measurement(chan=chan, meas_name='check_s21', meas_type='S21')   # TODO add measurement parameter const
+        self._analyzer.display_create_window(window=window)
+        self._analyzer.display_measurement(window=window, trace=trace, meas_name=meas_name)
+        self._analyzer.trigger_source('MANual')
+        self._analyzer.wait()
+        self._analyzer.trigger_point_mode(chan=chan, mode='OFF')
+        self._analyzer.source_power(chan=chan, port=port, value=-5)
+        self._analyzer.sense_fom_sweep_type(chan=chan, range=range_, type='linear')
+        self._analyzer.sense_sweep_points(chan=chan, points=points)
+        self._analyzer.sense_freq_start(chan=chan, value=10, unit='MHz')
+        self._analyzer.sense_freq_stop(chan=chan, value=8, unit='GHz')
+        self._analyzer.trigger_initiate()
+        self._analyzer.wait()
+        self._analyzer.calc_parameter_select(chan=chan, name=meas_name)
+        self._analyzer.format('ASCII')
+
+        return self._analyzer.calc_formatted_data(chan=chan)
 
     @property
     def analyzer_addr(self):
