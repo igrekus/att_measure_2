@@ -52,8 +52,8 @@ class InstrumentController:
 
     def _find_programmer(self):
         if is_mock:
-            from arduino.arduinospimock import ArduinoSpiMock
-            self._programmer = ArduinoSpiMock()
+            from arduino.arduinoparallelmock import ArduinoParallelMock
+            self._programmer = ArduinoParallelMock()
             return
 
         port = self._find_parallel_port()
