@@ -123,7 +123,7 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def on_btnMeasure_clicked(self):
         self._modeMeasureInProgress()
-        self._domain.measure()
+        self._domain.measure(self._ui.comboDevice.currentData(MapModel.RoleNodeId))
 
     @pyqtSlot()
     def on_btnContinue_clicked(self):

@@ -62,14 +62,14 @@ class Domain(QObject):
 
         return avg > pass_threshold
 
-    def measure(self):
-        print(f'run measurement')
+    def measure(self, device_id):
+        print(f'run measurement {device_id}')
         self._clear()
-        self._threadPool.start(Task(self._measureFunc, self._processingFunc))
+        self._threadPool.start(Task(self._measureFunc, self._processingFunc, device_id))
 
-    def _measureFunc(self):
+    def _measureFunc(self, device_id):
         print('start measurement task')
-        self._instruments.measure(1)
+        self._instruments.measure(device_id)
         print('end measurement task')
 
     def _processingFunc(self):

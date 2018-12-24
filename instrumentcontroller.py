@@ -146,6 +146,9 @@ class InstrumentController:
 
         return self._analyzer.calc_formatted_data(chan=chan)
 
+    def measure(self, device_id):
+        time.sleep(1)
+
     @property
     def analyzer_addr(self):
         return self._analyzer_addr
