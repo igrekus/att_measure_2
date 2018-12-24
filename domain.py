@@ -1,7 +1,5 @@
-from collections import defaultdict
 from functools import reduce
-
-from PyQt5.QtCore import QObject, pyqtSignal, QRunnable, pyqtSlot, QThreadPool
+from PyQt5.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal
 
 from instrumentcontroller import InstrumentController
 
@@ -36,14 +34,7 @@ class Task(QRunnable):
 
 class Domain(QObject):
 
-    MAXREG = 127
-
-    codeMeasured = pyqtSignal()
-    measurementFinished = pyqtSignal()
-    statsReady = pyqtSignal()
-    harmonicMeasured = pyqtSignal()
-    harmonicPointMeasured = pyqtSignal()
-    singleMeasured = pyqtSignal()
+    measureFinished = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -99,28 +90,13 @@ class Domain(QObject):
         return avg > pass_threshold
 
     def measure(self):
-        print(f'run measurement, cutoff={self._cutoffMag}')
+        print(f'run measurement')
         self._clear()
-        self.pool.start(Task(self.measurementFinished.emit, self._measureTask))
+        self._threadPool.start(Task(self._measureFunc, self._processingFunc))
 
-    def _measureCode(self, code=0):
-        print(f'\nmeasure: code={code:03d}, bin={code:07b}')
-        self._lastMeasurement = self._instruments.measure(code)
-
-    def _measureTask(self):
+    def _measureFunc(self):
         print('start measurement task')
-        regs = self.MAXREG + 1
-
-        # MOCK
-        if mock:
-            regs = 5
-
-        with MeasureContext(self._instruments):
-            for code in range(regs):
-                self._measureCode(code=code)
-                self._processCode()
-                self.codeMeasured.emit()
-
+        self._instruments.measure(1)
         print('end measurement task')
 
 #     def measure_code(self, chan, name):

@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
         self._refreshView()
 
     def _setupSignals(self):
-        pass
+        self._domain.measureFinished.connect(self.on_measurementFinished)
 
     def _setupUi(self):
         self._ui.comboDevice.setModel(MapModel(parent=self, data={0: '1324ПМ1 (0,25 дБ)', 1: '1324ПМ2 (0,5 дБ)'}))
@@ -122,11 +122,8 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_btnMeasure_clicked(self):
-        print('measure')
-        time.sleep(1)
         self._modeMeasureInProgress()
-        time.sleep(1)
-        self._modeAfterMeasure()
+        self._domain.measure()
 
     @pyqtSlot()
     def on_btnContinue_clicked(self):
@@ -142,3 +139,7 @@ class MainWindow(QMainWindow):
         self._domain.analyzerAddress = text
 
     # measurement events
+    @pyqtSlot()
+    def on_measurementFinished(self):
+        print('>>> on meas finish')
+        self._modeAfterMeasure()
