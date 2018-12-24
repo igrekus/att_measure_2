@@ -95,6 +95,7 @@ class MainWindow(QMainWindow):
         self._ui.btnReport.setEnabled(True)
 
     # event handlers
+    # GUI
     def resizeEvent(self, event):
         self._refreshView()
 
@@ -140,4 +141,4 @@ class MainWindow(QMainWindow):
     def on_editAnalyzerAddr_textChanged(self, text):
         self._domain.analyzerAddress = text
 
-
+    # measurement events
