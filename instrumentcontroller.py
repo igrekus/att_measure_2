@@ -84,10 +84,11 @@ class InstrumentController:
 
     def _find_parallel_port(self):
         for port in self._available_ports:
-            s = serial.Serial(port=port, baudrate=9600, timeout=0.5)
+            s = serial.Serial(port=port, baudrate=9600, timeout=1)
             if s.is_open:
                 s.write(b'#NAME')
-                ans = s.read(9)
+                time.sleep(2)
+                ans = s.read_all()
                 s.close()
                 if b'ARDUINO' in ans:
                     return port
@@ -127,9 +128,9 @@ class InstrumentController:
                 self._analyzer = AgilentE8362B.from_address_string(self._analyzer_addr)
                 return
             except Exception as ex:
-                print(ex)
+                print('analyzer find error:', ex)
 
-        self._analyzer = AgilentE8362B.try_find()
+        self._analyzer, self._analyzer_addr = AgilentE8362B.try_find()
         if not self._analyzer:
             print('analyzer not found, giving up')
 
