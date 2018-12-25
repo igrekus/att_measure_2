@@ -20,13 +20,13 @@ class InstrumentController:
             'f1': 10_000_000,
             'f2': 8_000_000_000,
             'pow': -5,
-            'points': 1601
+            'points': 1601 if not is_mock else 51
         },
         1: {
             'f1': 10_000_000,
             'f2': 15_000_000_000,
             'pow': -5,
-            'points': 1601
+            'points': 1601 if not is_mock else 51
         },
     }
 
@@ -151,14 +151,6 @@ class InstrumentController:
 
         return self._programmer and self._analyzer
 
-    def measure(self, code):
-        time.sleep(1)
-        return
-        if not self._programmer.set_lpf_code(code):
-            print(f'error setting code: {code}')
-            return [], []
-        return self._analyzer.measure(code)
-
     def test_sample(self, points=51):
         chan = 1
         window = 1
@@ -188,8 +180,76 @@ class InstrumentController:
 
         return self._analyzer.calc_formatted_data(chan=chan)
 
+    def _measure_point(self, chan, name):
+        print('measure param', name)
+        self._analyzer.calc_parameter_select(chan=chan, name=name)
+        return self._analyzer.calc_formatted_data(chan=1)
+
     def measure(self, device_id):
         time.sleep(1)
+
+        chan = 1
+        port = 1
+        window = 1
+        trace_s21 = 1
+        trace_s11 = 2
+        trace_s22 = 3
+        range_ = 1
+        s21_name = 'meas_s21'
+        s11_name = 'meas_s11'
+        s22_name = 'meas_s22'
+
+        meas_pow = self.params[device_id]['pow']
+        meas_f1 = self.params[device_id]['f1']
+        meas_f2 = self.params[device_id]['f2']
+        points = self.params[device_id]['points']
+
+        # self._analyzer.reset()
+        # 2470 / 3834
+        # TODO load calibration table here
+        self._analyzer.calc_create_measurement(chan=chan, meas_name=s21_name, meas_type='S21')
+        self._analyzer.calc_create_measurement(chan=chan, meas_name=s11_name, meas_type='S11')
+        self._analyzer.calc_create_measurement(chan=chan, meas_name=s22_name, meas_type='S22')
+
+        self._analyzer.display_delete_trace(window=window, trace=trace_s21)
+
+        self._analyzer.display_create_trace(window=window, trace=trace_s21, meas_name=s21_name)
+        self._analyzer.display_create_trace(window=window, trace=trace_s11, meas_name=s11_name)
+        self._analyzer.display_create_trace(window=window, trace=trace_s22, meas_name=s22_name)
+
+        self._analyzer.trigger_source('MANual')
+        self._analyzer.wait()
+
+        self._analyzer.source_power(chan=chan, port=port, value=meas_pow)
+        self._analyzer.sense_fom_sweep_type(chan=chan, range=range_, type='linear')
+        self._analyzer.sense_sweep_points(chan=chan, points=points)
+        self._analyzer.sense_freq_start(chan=chan, value=meas_f1, unit='Hz')
+        self._analyzer.sense_freq_stop(chan=chan, value=meas_f2, unit='Hz')
+
+        self._analyzer.trigger_scope('CURRENT')
+        self._analyzer.format('ASCII')
+
+        s21s = list()
+        s11s = list()
+        s22s = list()
+
+        for label, code in list(self.codes[device_id].items()):
+            print(f'setting value={label} code={code}')
+            self._programmer.set_lpf_code(invert_bits(code))
+
+            self._analyzer.trigger_initiate()
+            self._analyzer.wait()
+            s21s.append(parse_measure_string(self._measure_point(chan, s21_name)))
+
+            self._analyzer.trigger_initiate()
+            self._analyzer.wait()
+            s11s.append(parse_measure_string(self._measure_point(chan, s11_name)))
+
+            self._analyzer.trigger_initiate()
+            self._analyzer.wait()
+            s22s.append(parse_measure_string(self._measure_point(chan, s22_name)))
+
+        return s21s, s11s, s22s
 
     @property
     def analyzer_addr(self):
