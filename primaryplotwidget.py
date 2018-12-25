@@ -64,19 +64,19 @@ class PrimaryPlotWidget(QWidget):
         self._plot22.clear()
         self._init()
 
-    def plotCode(self):
-        print('plotting code')
-        self._plot11.plot(self._domain.lastXs, self._domain.lastYs, color='0.4')
+    def plot(self):
+        self.clear()
+        print('plotting primary stats')
+        self._plot11.plot(self._domain.insLossXs, self._domain.insLossYs)
 
-    def plotStats(self):
-        print('plotting stats')
-        self._plot12.plot(self._domain.cutoffXs, self._domain.cutoffYs, color='0.4')
-        self._plot21.plot(self._domain.deltaXs, self._domain.deltaYs, color='0.4')
-        self._plot22.plot(self._domain.lossDoubleXs, self._domain.lossDoubleYs, color='0.4')
-        self._plot22.plot(self._domain.lossTripleXs, self._domain.lossTripleYs, color='0.4')
+        for xs, ys in zip(self._domain.errorPerCodeXs, self._domain.errorPerCodeYs):
+            self._plot12.plot(xs, ys)
 
-        self._plot11.axhline(self._domain.cutoffAmp, 0, 1, linewidth=0.8, color='0.3', linestyle='--')
-        self._plot11.set_yticks(sorted(set(list(self._plot11.get_yticks()[0]) + [self._domain.cutoffMag])))
+        for xs, ys in zip(self._domain.inputInverseLossXs, self._domain.inputInverseLossYs):
+            self._plot21.plot(xs, ys)
+
+        for xs, ys in zip(self._domain.outputInverseLossXs, self._domain.outputInverseLossYs):
+            self._plot22.plot(xs, ys)
 
     def save(self, img_path='./image'):
         try:

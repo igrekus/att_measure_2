@@ -151,4 +151,51 @@ class Domain(QObject):
     def analyzerName(self):
         return str(self._instruments._analyzer)
 
+    @property
+    def insLossXs(self):
+        return self._result_freqs
+
+    @property
+    def insLossYs(self):
+        return self._result_baseline
+
+    @property
+    def errorPerCodeXs(self):
+        return [self._result_freqs] * 8
+
+    @property
+    def errorPerCodeYs(self):
+        return self._result_att_error_per_code
+
+    @property
+    def inputInverseLossXs(self):
+        return [self._result_freqs] * 8
+
+    @property
+    def inputInverseLossYs(self):
+        return self._result_s11
+
+    @property
+    def outputInverseLossXs(self):
+        return [self._result_freqs] * 8
+
+    @property
+    def outputInverseLossYs(self):
+        return self._result_s22
+
+    @property
+    def normalizedAttXs(self):
+        return [self._result_freqs] * 8
+
+    @property
+    def normalizedAttYs(self):
+        return self._result_normalized_att
+
+    @property
+    def attenuationXs(self):
+        return [self._result_freqs] * 8
+
+    @property
+    def attenuationYs(self):
+        return self._result_att
 
