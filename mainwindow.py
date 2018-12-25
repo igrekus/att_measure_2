@@ -138,6 +138,10 @@ class MainWindow(QMainWindow):
     def on_editAnalyzerAddr_textChanged(self, text):
         self._domain.analyzerAddress = text
 
+    @pyqtSlot(str)
+    def on_editCalibFile_textChanged(self, text):
+        self._domain.calibrationFile = text
+
     # measurement events
     @pyqtSlot()
     def on_measurementFinished(self):

@@ -152,6 +152,14 @@ class Domain(QObject):
         return str(self._instruments._analyzer)
 
     @property
+    def calibrationFile(self):
+        return self._instruments.calibration_file
+
+    @calibrationFile.setter
+    def calibrationFile(self, name):
+        self._instruments.calibration_file = name
+
+    @property
     def insLossXs(self):
         return self._result_freqs
 
