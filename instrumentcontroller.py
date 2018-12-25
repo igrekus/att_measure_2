@@ -9,6 +9,10 @@ def invert_bits(value):
     return value ^ 0b111111
 
 
+def parse_measure_string(string: str):
+    return [float(point) for point in string.split(',')]
+
+
 class InstrumentController:
 
     params = {
