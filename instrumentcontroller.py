@@ -168,9 +168,10 @@ class InstrumentController:
 
         self._programmer.set_lpf_code(invert_bits(0b100000))
         self._analyzer.reset()
-        # TODO load calibration here
-        _, meas_name = self._analyzer.calc_create_measurement(chan=chan, meas_name='check_s21', meas_type='S21')   # TODO add measurement parameter const
-        self._analyzer.display_create_window(window=window)
+        self._analyzer.send(f'MMEMory:LOAD:CSARchive "D:\\Vysotka29_ATT\\1324MP.csa"')
+        _, meas_name = self._analyzer.calc_create_measurement(chan=chan, meas_name='check_s21', meas_type='S21')
+        # self._analyzer.display_create_window(window=window)
+        self._analyzer.display_delete_trace(window=window, trace=trace)
         self._analyzer.display_create_trace(window=window, trace=trace, meas_name=meas_name)
         self._analyzer.trigger_source('MANual')
         self._analyzer.wait()
