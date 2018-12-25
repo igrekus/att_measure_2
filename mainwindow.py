@@ -26,8 +26,8 @@ class MainWindow(QMainWindow):
         self._ui.primaryPlots = PrimaryPlotWidget(parent=self, domain=self._domain)
         self._ui.secondaryPlots = SecondaryPlotWidget(parent=self, domain=self._domain)
 
-        self._ui.tabWidget.addTab(self._ui.primaryPlots, 'Основные параметры')
-        self._ui.tabWidget.addTab(self._ui.secondaryPlots, 'Второстепенные параметры')
+        self._ui.tabWidget.addTab(self._ui.primaryPlots, 'Параметры 1')
+        self._ui.tabWidget.addTab(self._ui.secondaryPlots, 'Параметры 2')
 
         self._init()
 
@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         self._domain.measureFinished.connect(self.on_measurementFinished)
 
     def _setupUi(self):
-        self._ui.comboDevice.setModel(MapModel(parent=self, data={0: '1324ПМ1 (0,25 дБ)', 1: '1324ПМ2 (0,5 дБ)'}))
+        self._ui.comboDevice.setModel(MapModel(parent=self, data={0: '1324ПМ1У (0,25 дБ)', 1: '1324ПМ2У (0,5 дБ)'}))
         self._ui.tableResult.setModel(ResultModel(parent=self, domain=self._domain))
 
         self._modeBeforeConnect()
@@ -123,7 +123,7 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def on_btnMeasure_clicked(self):
         self._modeMeasureInProgress()
-        self._domain.measure()
+        self._domain.measure(self._ui.comboDevice.currentData(MapModel.RoleNodeId))
 
     @pyqtSlot()
     def on_btnContinue_clicked(self):
@@ -141,5 +141,10 @@ class MainWindow(QMainWindow):
     # measurement events
     @pyqtSlot()
     def on_measurementFinished(self):
-        print('>>> on meas finish')
+        print('plotting stats')
+        try:
+            self._ui.primaryPlots.plot()   # TODO 11,12 -- 12GHz limit,
+            self._ui.secondaryPlots.plot()   # TODO 11, 12 -- 12GHZ limit
+        except Exception as ex:
+            print(ex)
         self._modeAfterMeasure()
