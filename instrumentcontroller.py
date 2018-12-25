@@ -57,8 +57,6 @@ class InstrumentController:
 
         self._available_ports = list()
 
-        self._harmonic = 1
-
     def _find_ports(self):
         for port in [f'COM{i+1}' for i in range(256)]:
             try:
