@@ -207,8 +207,6 @@ class InstrumentController:
         points = self.params[device_id]['points']
 
         # self._analyzer.reset()
-        # 2470 / 3834
-        # TODO load calibration table here
         self._analyzer.calc_create_measurement(chan=chan, meas_name=s21_name, meas_type='S21')
         self._analyzer.calc_create_measurement(chan=chan, meas_name=s11_name, meas_type='S11')
         self._analyzer.calc_create_measurement(chan=chan, meas_name=s22_name, meas_type='S22')
