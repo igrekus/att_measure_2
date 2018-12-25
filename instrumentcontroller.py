@@ -168,7 +168,7 @@ class InstrumentController:
         # TODO load calibration here
         _, meas_name = self._analyzer.calc_create_measurement(chan=chan, meas_name='check_s21', meas_type='S21')   # TODO add measurement parameter const
         self._analyzer.display_create_window(window=window)
-        self._analyzer.display_measurement(window=window, trace=trace, meas_name=meas_name)
+        self._analyzer.display_create_trace(window=window, trace=trace, meas_name=meas_name)
         self._analyzer.trigger_source('MANual')
         self._analyzer.wait()
         self._analyzer.trigger_point_mode(chan=chan, mode='OFF')
