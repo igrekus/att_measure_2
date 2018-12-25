@@ -27,16 +27,16 @@ class SecondaryPlotWidget(QWidget):
     def _init(self):
         # self._plot11.set_tight_layout(True)
         self._plot11.subplots_adjust(bottom=0.150)
-        self._plot11.set_title('Нормализованный к-т ослабления')
-        self._plot11.set_xlabel('F, ГГц', labelpad=-2)
-        self._plot11.set_ylabel('Norm att., дБ', labelpad=-2)
+        self._plot11.set_title('Нормализованный коэффициент ослабления')
+        self._plot11.set_xlabel('Частота, ГГц', labelpad=-2)
+        self._plot11.set_ylabel('αпот.н, дБ', labelpad=-2)
         self._plot11.grid(b=True, which='major', color='0.5', linestyle='-')
 
         # self._plot12.set_tight_layout(True)
         self._plot12.subplots_adjust(bottom=0.150)
-        self._plot12.set_title(f'К-т ослабления для всех стостояний')
-        self._plot12.set_xlabel('F, ГГц', labelpad=-2)
-        self._plot12.set_ylabel('Loss, дБ', labelpad=-2)
+        self._plot12.set_title(f'Коэффициент ослабления для всех стостояний')
+        self._plot12.set_xlabel('Частота, ГГц', labelpad=-2)
+        self._plot12.set_ylabel('αпот, дБ', labelpad=-2)
         self._plot12.grid(b=True, which='major', color='0.5', linestyle='-')
 
     def clear(self):
