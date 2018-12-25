@@ -1,4 +1,7 @@
 from functools import reduce
+from itertools import repeat
+
+import numpy
 from PyQt5.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal
 
 from instrumentcontroller import InstrumentController
@@ -42,10 +45,32 @@ class Domain(QObject):
         self._instruments = InstrumentController()
         self._threadPool = QThreadPool()
 
-        self._baseline = list()
+        self.device_id = 0
+
+        self.s21s = list()
+        self.s11s = list()
+        self.s22s = list()
+
+        self._result_baseline = list()
+        self._result_freqs = list()
+        self._result_s11 = list()
+        self._result_s22 = list()
+        self._result_normalized_att = list()
+        self._result_att_error_per_code = list()
+        self._result_att = list()
 
     def _clear(self):
-        self._baseline.clear()
+        self.s21s.clear()
+        self.s11s.clear()
+        self.s22s.clear()
+
+        self._result_baseline.clear()
+        self._result_freqs.clear()
+        self._result_s11.clear()
+        self._result_s22.clear()
+        self._result_normalized_att.clear()
+        self._result_att_error_per_code.clear()
+        self._result_att.clear()
 
     def connect(self):
         print('find instruments')
@@ -56,7 +81,9 @@ class Domain(QObject):
 
         pass_threshold = -90
         points = 51
-        avg = reduce(lambda a, b: a + b, map(float, self._instruments.test_sample(points=51).split(',')), 0) / points
+        data = self._instruments.test_sample(points=points).split(',')
+        print(len(data))
+        avg = reduce(lambda a, b: a + b, map(float, data), 0) / points
 
         print(f'>>> avg level: {avg}')
 
@@ -69,10 +96,43 @@ class Domain(QObject):
 
     def _measureFunc(self, device_id):
         print('start measurement task')
-        self._instruments.measure(device_id)
+        self.device_id = device_id
+        self.s21s, self.s11s, self.s22s = self._instruments.measure(device_id)
         print('end measurement task')
 
     def _processingFunc(self):
+        print('processing stats')
+        # gen freq data
+        # TODO: read off PNA
+        self._result_freqs = list(numpy.linspace(self._instruments.params[self.device_id]['f1'],
+                                                 self._instruments.params[self.device_id]['f2'],
+                                                 self._instruments.params[self.device_id]['points']))
+
+        # calc baseline
+        self._result_baseline = self.s21s[0]
+
+        # calc S11, S22
+        self._result_s11 = self.s11s
+        self._result_s22 = self.s22s
+
+        # calc attenuation
+        self._result_att = self.s21s
+
+        # calc normalized attenuation
+        self._result_normalized_att = list()
+        for s21 in self.s21s:
+            self._result_normalized_att.append([current - baseline for current, baseline in zip(s21, self._result_baseline)])
+
+        # calc attenuation error per code
+        for data, att in zip(self._result_normalized_att, self._instruments.codes[self.device_id].keys()):
+            self._result_att_error_per_code.append([d + c for d, c in zip(data, repeat(att, len(data)))])
+
+        # calc attenuation error per freq - ?
+        # how to choose freqs?
+        # interpolate data between setting points or simply connect points?
+
+        # calc phase shift
+
         self.measureFinished.emit()
 
     @property
