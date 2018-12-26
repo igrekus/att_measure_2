@@ -58,6 +58,7 @@ class Domain(QObject):
         self._result_normalized_att = list()
         self._result_att_error_per_code = list()
         self._result_att = list()
+        self._result_att_all = list()
 
     def _clear(self):
         self.s21s.clear()
@@ -71,6 +72,7 @@ class Domain(QObject):
         self._result_normalized_att.clear()
         self._result_att_error_per_code.clear()
         self._result_att.clear()
+        self._result_att_all.clear()
 
     def connect(self):
         print('find instruments')
@@ -97,7 +99,7 @@ class Domain(QObject):
     def _measureFunc(self, device_id):
         print('start measurement task')
         self.device_id = device_id
-        self.s21s, self.s11s, self.s22s = self._instruments.measure(device_id)
+        self.s21s, self.s11s, self.s22s, self._result_att_all = self._instruments.measure(device_id)
         print('end measurement task')
 
     def _processingFunc(self):
@@ -201,9 +203,9 @@ class Domain(QObject):
 
     @property
     def attenuationXs(self):
-        return [self._result_freqs] * 8
+        return [self._result_freqs] * len(self._result_att_all)
 
     @property
     def attenuationYs(self):
-        return self._result_att
+        return self._result_att_all
 
