@@ -232,24 +232,29 @@ class InstrumentController:
         s21s = list()
         s11s = list()
         s22s = list()
+        s21s_all = list()
 
-        for label, code in list(self.codes[device_id].items()):
-            print(f'setting value={label} code={code}')
+        cds = list(self.codes[device_id].values())
+        for code in range(64):
             self._programmer.set_lpf_code(invert_bits(code))
 
-            self._analyzer.trigger_initiate()
-            self._analyzer.wait()
-            s21s.append(parse_measure_string(self._measure_point(chan, s21_name)))
+            s21s_tmp = parse_measure_string(self._measure_point(chan, s21_name))
+            s21s_all.append(s21s_tmp)
 
-            self._analyzer.trigger_initiate()
-            self._analyzer.wait()
-            s11s.append(parse_measure_string(self._measure_point(chan, s11_name)))
+            if code in cds:
+                self._analyzer.trigger_initiate()
+                self._analyzer.wait()
+                s21s.append(s21s_tmp)
 
-            self._analyzer.trigger_initiate()
-            self._analyzer.wait()
-            s22s.append(parse_measure_string(self._measure_point(chan, s22_name)))
+                self._analyzer.trigger_initiate()
+                self._analyzer.wait()
+                s11s.append(parse_measure_string(self._measure_point(chan, s11_name)))
 
-        return s21s, s11s, s22s
+                self._analyzer.trigger_initiate()
+                self._analyzer.wait()
+                s22s.append(parse_measure_string(self._measure_point(chan, s22_name)))
+
+        return s21s, s11s, s22s, s21s_all
 
     @property
     def analyzer_addr(self):
