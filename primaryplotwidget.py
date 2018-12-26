@@ -34,6 +34,7 @@ class PrimaryPlotWidget(QWidget):
         self._plot11.set_title('Вносимые потери')
         self._plot11.set_xlabel('Частота, ГГц', labelpad=-2)
         self._plot11.set_ylabel('αпот., дБ', labelpad=-2)
+        self._plot11.set_xlim(10_000_000, 12_000_000_000)
         self._plot11.grid(b=True, which='major', color='0.5', linestyle='-')
 
         # self._plot22.set_tight_layout(True)
@@ -41,6 +42,7 @@ class PrimaryPlotWidget(QWidget):
         self._plot12.set_title('Ошибка для состояния')
         self._plot12.set_xlabel('Частота, ГГц', labelpad=-2)
         self._plot12.set_ylabel('Аош', labelpad=-2)
+        self._plot12.set_xlim(10_000_000, 12_000_000_000)
         self._plot12.grid(b=True, which='major', color='0.5', linestyle='-')
 
         # self._plot21.set_tight_layout(True)

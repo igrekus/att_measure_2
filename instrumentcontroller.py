@@ -56,6 +56,8 @@ class InstrumentController:
     def __init__(self):
         self._analyzer_addr = 'GPIB0::1::INSTR'
 
+        self._calib_file_name = 'D:\\Vysotka29_ATT\\1324MP.csa'
+
         self._programmer = None
         self._analyzer = None
 
@@ -160,7 +162,7 @@ class InstrumentController:
 
         self._programmer.set_lpf_code(invert_bits(0b100000))
         self._analyzer.reset()
-        self._analyzer.send(f'MMEMory:LOAD:CSARchive "D:\\Vysotka29_ATT\\1324MP.csa"')
+        self._analyzer.calib_import_device_state(f'MMEMory:LOAD:CSARchive "{self._calib_file_name}"')
         _, meas_name = self._analyzer.calc_create_measurement(chan=chan, meas_name='check_s21', meas_type='S21')
         # self._analyzer.display_create_window(window=window)
         self._analyzer.display_delete_trace(window=window, trace=trace)
@@ -205,8 +207,6 @@ class InstrumentController:
         points = self.params[device_id]['points']
 
         # self._analyzer.reset()
-        # 2470 / 3834
-        # TODO load calibration table here
         self._analyzer.calc_create_measurement(chan=chan, meas_name=s21_name, meas_type='S21')
         self._analyzer.calc_create_measurement(chan=chan, meas_name=s11_name, meas_type='S11')
         self._analyzer.calc_create_measurement(chan=chan, meas_name=s22_name, meas_type='S22')
@@ -258,3 +258,12 @@ class InstrumentController:
     @analyzer_addr.setter
     def analyzer_addr(self, addr):
         self._analyzer_addr = addr
+
+    @property
+    def calibration_file(self):
+        return self._calib_file_name
+
+    @calibration_file.setter
+    def calibration_file(self, name):
+        self._calib_file_name = name
+

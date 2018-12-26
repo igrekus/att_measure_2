@@ -30,6 +30,7 @@ class SecondaryPlotWidget(QWidget):
         self._plot11.set_title('Нормализованный коэффициент ослабления')
         self._plot11.set_xlabel('Частота, ГГц', labelpad=-2)
         self._plot11.set_ylabel('αпот.н, дБ', labelpad=-2)
+        self._plot11.set_xlim(10_000_000, 12_000_000_000)
         self._plot11.grid(b=True, which='major', color='0.5', linestyle='-')
 
         # self._plot12.set_tight_layout(True)
@@ -37,6 +38,7 @@ class SecondaryPlotWidget(QWidget):
         self._plot12.set_title(f'Коэффициент ослабления для всех стостояний')
         self._plot12.set_xlabel('Частота, ГГц', labelpad=-2)
         self._plot12.set_ylabel('αпот, дБ', labelpad=-2)
+        self._plot12.set_xlim(10_000_000, 12_000_000_000)
         self._plot12.grid(b=True, which='major', color='0.5', linestyle='-')
 
     def clear(self):

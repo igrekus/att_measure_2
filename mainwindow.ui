@@ -43,7 +43,7 @@
            <item>
             <widget class="QLineEdit" name="editAnalyzerAddr">
              <property name="text">
-              <string>GPIB0::1::INSTR</string>
+              <string>GPIB0::16::INSTR</string>
              </property>
              <property name="placeholderText">
               <string>адрес анализатора...</string>
@@ -94,6 +94,16 @@
          <string>Настройки измерения</string>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QLineEdit" name="editCalibFile">
+           <property name="text">
+            <string>D:\Vysotka29_ATT\1324MP.csa</string>
+           </property>
+           <property name="placeholderText">
+            <string>имя калибровочного файла</string>
+           </property>
+          </widget>
+         </item>
          <item>
           <widget class="QComboBox" name="comboDevice">
            <property name="sizePolicy">
