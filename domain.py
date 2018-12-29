@@ -109,6 +109,7 @@ class Domain(QObject):
         self._result_freqs = list(numpy.linspace(self._instruments.params[self.device_id]['f1'],
                                                  self._instruments.params[self.device_id]['f2'],
                                                  self._instruments.points))
+        self._result_freqs = list(map(lambda x: x/1_000_000_000, self._result_freqs))
 
         # calc baseline
         self._result_baseline = self.s21s[0]
