@@ -18,13 +18,13 @@ class InstrumentController:
     params = {
         0: {
             'f1': 10_000_000,
-            'f2': 8_000_000_000,
+            'f2': 6_000_000_000,
             'pow': -5,
             'points': 1601 if not is_mock else 51
         },
         1: {
             'f1': 10_000_000,
-            'f2': 15_000_000_000,
+            'f2': 12_000_000_000,
             'pow': -5,
             'points': 1601 if not is_mock else 51
         },
@@ -177,7 +177,7 @@ class InstrumentController:
         self._analyzer.sense_fom_sweep_type(chan=chan, range=range_, type='linear')
         self._analyzer.sense_sweep_points(chan=chan, points=points)
         self._analyzer.sense_freq_start(chan=chan, value=10, unit='MHz')
-        self._analyzer.sense_freq_stop(chan=chan, value=8, unit='GHz')
+        self._analyzer.sense_freq_stop(chan=chan, value=12, unit='GHz')
         self._analyzer.trigger_initiate()
         self._analyzer.wait()
         self._analyzer.calc_parameter_select(chan=chan, name=meas_name)
