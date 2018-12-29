@@ -18,14 +18,20 @@ class InstrumentController:
     params = {
         0: {
             'f1': 10_000_000,
-            'f2': 8_000_000_000,
+            'f2': 6_000_000_000,
             'pow': -5,
             'points': 1601 if not is_mock else 51
         },
         1: {
             'f1': 10_000_000,
-            'f2': 15_000_000_000,
+            'f2': 12_000_000_000,
             'pow': -5,
+            'points': 1601 if not is_mock else 51
+        },
+        2: {
+            'f1': 10_000_000,
+            'f2': 12_000_000_000,
+            'pow': -30,
             'points': 1601 if not is_mock else 51
         },
     }
@@ -50,16 +56,28 @@ class InstrumentController:
             8.0:  0b010000,
             16.0: 0b100000,
             31.5: 0b111111
+        },
+        2: {
+            0.0:  0b000000,
+            0.5:  0b000001,
+            1.0:  0b000010,
+            2.0:  0b000100,
+            4.0:  0b001000,
+            8.0:  0b010000,
+            16.0: 0b100000,
+            31.5: 0b111111
         }
     }
 
     def __init__(self):
         self._analyzer_addr = 'GPIB0::1::INSTR'
 
-        self._calib_file_name = 'D:\\Vysotka29_ATT\\1324MP.csa'
+        self._calib_file_name = 'D:/Vysotka29_ATT/1324MP.csa'
 
         self._programmer = None
         self._analyzer = None
+
+        self.points = 51
 
         self._available_ports = list()
 
@@ -159,13 +177,19 @@ class InstrumentController:
         trace = 1
         port = 1
         range_ = 1
+        self.points = 51
 
         self._programmer.set_lpf_code(invert_bits(0b100000))
         self._analyzer.reset()
-        self._analyzer.calib_import_device_state(f'MMEMory:LOAD:CSARchive "{self._calib_file_name}"')
+        # MMEMory:LOAD:CSARchive\s"D:/Vysotka29_ATT/1324MP.csa"
+        self._analyzer.calib_import_device_state(f'D:/Vysotka29_ATT/1324MP.csa')
+
+        self._analyzer.send(f'DISPlay:WINDow{window}:STATe OFF')
+        self._analyzer.display_create_window(window=window)
+        # self._analyzer.display_delete_trace(window=window, trace=trace)
+
+        # DISPlay:WINDow<wnum>:CATalog?
         _, meas_name = self._analyzer.calc_create_measurement(chan=chan, meas_name='check_s21', meas_type='S21')
-        # self._analyzer.display_create_window(window=window)
-        self._analyzer.display_delete_trace(window=window, trace=trace)
         self._analyzer.display_create_trace(window=window, trace=trace, meas_name=meas_name)
         self._analyzer.trigger_source('MANual')
         self._analyzer.wait()
@@ -174,7 +198,7 @@ class InstrumentController:
         self._analyzer.sense_fom_sweep_type(chan=chan, range=range_, type='linear')
         self._analyzer.sense_sweep_points(chan=chan, points=points)
         self._analyzer.sense_freq_start(chan=chan, value=10, unit='MHz')
-        self._analyzer.sense_freq_stop(chan=chan, value=8, unit='GHz')
+        self._analyzer.sense_freq_stop(chan=chan, value=12, unit='GHz')
         self._analyzer.trigger_initiate()
         self._analyzer.wait()
         self._analyzer.calc_parameter_select(chan=chan, name=meas_name)
@@ -185,7 +209,7 @@ class InstrumentController:
     def _measure_point(self, chan, name):
         print('measure param', name)
         self._analyzer.calc_parameter_select(chan=chan, name=name)
-        return self._analyzer.calc_formatted_data(chan=1)
+        return self._analyzer.calc_formatted_data(chan=chan)
 
     def measure(self, device_id):
         time.sleep(1)
@@ -205,6 +229,7 @@ class InstrumentController:
         meas_f1 = self.params[device_id]['f1']
         meas_f2 = self.params[device_id]['f2']
         points = self.params[device_id]['points']
+        self.points = points
 
         # self._analyzer.reset()
         self._analyzer.calc_create_measurement(chan=chan, meas_name=s21_name, meas_type='S21')
@@ -220,14 +245,15 @@ class InstrumentController:
         self._analyzer.trigger_source('MANual')
         self._analyzer.wait()
 
+        self._analyzer.sense_sweep_points(chan=chan, points=points)
         self._analyzer.source_power(chan=chan, port=port, value=meas_pow)
         self._analyzer.sense_fom_sweep_type(chan=chan, range=range_, type='linear')
-        self._analyzer.sense_sweep_points(chan=chan, points=points)
         self._analyzer.sense_freq_start(chan=chan, value=meas_f1, unit='Hz')
         self._analyzer.sense_freq_stop(chan=chan, value=meas_f2, unit='Hz')
 
         self._analyzer.trigger_scope('CURRENT')
         self._analyzer.format('ASCII')
+        self._analyzer.wait()
 
         s21s = list()
         s11s = list()
@@ -238,12 +264,14 @@ class InstrumentController:
         for code in range(64):
             self._programmer.set_lpf_code(invert_bits(code))
 
+            self._analyzer.trigger_initiate()
+            self._analyzer.wait()
             s21s_tmp = parse_measure_string(self._measure_point(chan, s21_name))
             s21s_all.append(s21s_tmp)
 
             if code in cds:
-                self._analyzer.trigger_initiate()
-                self._analyzer.wait()
+                # self._analyzer.trigger_initiate()
+                # self._analyzer.wait()
                 s21s.append(s21s_tmp)
 
                 self._analyzer.trigger_initiate()
