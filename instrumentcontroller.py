@@ -72,7 +72,7 @@ class InstrumentController:
     def __init__(self):
         self._analyzer_addr = 'GPIB0::1::INSTR'
 
-        self._calib_file_name = 'D:\\Vysotka29_ATT\\1324MP.csa'
+        self._calib_file_name = 'D:/Vysotka29_ATT/1324MP.csa'
 
         self._programmer = None
         self._analyzer = None
@@ -181,10 +181,15 @@ class InstrumentController:
 
         self._programmer.set_lpf_code(invert_bits(0b100000))
         self._analyzer.reset()
-        self._analyzer.calib_import_device_state(f'MMEMory:LOAD:CSARchive "{self._calib_file_name}"')
+        # MMEMory:LOAD:CSARchive\s"D:/Vysotka29_ATT/1324MP.csa"
+        self._analyzer.calib_import_device_state(f'D:/Vysotka29_ATT/1324MP.csa')
+
+        self._analyzer.send(f'DISPlay:WINDow{window}:STATe OFF')
+        self._analyzer.display_create_window(window=window)
+        # self._analyzer.display_delete_trace(window=window, trace=trace)
+
+        # DISPlay:WINDow<wnum>:CATalog?
         _, meas_name = self._analyzer.calc_create_measurement(chan=chan, meas_name='check_s21', meas_type='S21')
-        # self._analyzer.display_create_window(window=window)
-        self._analyzer.display_delete_trace(window=window, trace=trace)
         self._analyzer.display_create_trace(window=window, trace=trace, meas_name=meas_name)
         self._analyzer.trigger_source('MANual')
         self._analyzer.wait()
