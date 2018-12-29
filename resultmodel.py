@@ -9,7 +9,8 @@ class ResultModel(QAbstractTableModel):
 
     _standard = {
         0: [5, 0.01, 3, 1.0, 2.0, 2.0],
-        1: [15, 0.01, 10, 1.5, 2.0, 2.0]
+        1: [15, 0.01, 10, 1.5, 2.0, 2.0],
+        2: [15, 0.01, 10, 1.5, 2.0, 2.0]   # TODO change params for actual device
     }
 
     def __init__(self, parent=None, domain=None):
