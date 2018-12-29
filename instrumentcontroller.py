@@ -61,6 +61,8 @@ class InstrumentController:
         self._programmer = None
         self._analyzer = None
 
+        self.points = 51
+
         self._available_ports = list()
 
     def _find_ports(self):
@@ -159,6 +161,7 @@ class InstrumentController:
         trace = 1
         port = 1
         range_ = 1
+        self.points = 51
 
         self._programmer.set_lpf_code(invert_bits(0b100000))
         self._analyzer.reset()
@@ -205,6 +208,7 @@ class InstrumentController:
         meas_f1 = self.params[device_id]['f1']
         meas_f2 = self.params[device_id]['f2']
         points = self.params[device_id]['points']
+        self.points = points
 
         # self._analyzer.reset()
         self._analyzer.calc_create_measurement(chan=chan, meas_name=s21_name, meas_type='S21')
@@ -220,9 +224,9 @@ class InstrumentController:
         self._analyzer.trigger_source('MANual')
         self._analyzer.wait()
 
+        self._analyzer.sense_sweep_points(chan=chan, points=points)
         self._analyzer.source_power(chan=chan, port=port, value=meas_pow)
         self._analyzer.sense_fom_sweep_type(chan=chan, range=range_, type='linear')
-        self._analyzer.sense_sweep_points(chan=chan, points=points)
         self._analyzer.sense_freq_start(chan=chan, value=meas_f1, unit='Hz')
         self._analyzer.sense_freq_stop(chan=chan, value=meas_f2, unit='Hz')
 
