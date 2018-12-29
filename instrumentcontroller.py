@@ -209,7 +209,7 @@ class InstrumentController:
     def _measure_point(self, chan, name):
         print('measure param', name)
         self._analyzer.calc_parameter_select(chan=chan, name=name)
-        return self._analyzer.calc_formatted_data(chan=1)
+        return self._analyzer.calc_formatted_data(chan=chan)
 
     def measure(self, device_id):
         time.sleep(1)
@@ -253,6 +253,7 @@ class InstrumentController:
 
         self._analyzer.trigger_scope('CURRENT')
         self._analyzer.format('ASCII')
+        self._analyzer.wait()
 
         s21s = list()
         s11s = list()
@@ -263,12 +264,14 @@ class InstrumentController:
         for code in range(64):
             self._programmer.set_lpf_code(invert_bits(code))
 
+            self._analyzer.trigger_initiate()
+            self._analyzer.wait()
             s21s_tmp = parse_measure_string(self._measure_point(chan, s21_name))
             s21s_all.append(s21s_tmp)
 
             if code in cds:
-                self._analyzer.trigger_initiate()
-                self._analyzer.wait()
+                # self._analyzer.trigger_initiate()
+                # self._analyzer.wait()
                 s21s.append(s21s_tmp)
 
                 self._analyzer.trigger_initiate()
