@@ -105,18 +105,26 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboDevice">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+          <widget class="QRadioButton" name="radioPm1u">
+           <property name="text">
+            <string>1324ПМ1У (0,25 дБ)</string>
            </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioPm2u">
+           <property name="text">
+            <string>1324ПМ2У (0,5 дБ)</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButton_3">
+           <property name="text">
+            <string>new device</string>
            </property>
           </widget>
          </item>
