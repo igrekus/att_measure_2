@@ -9,14 +9,96 @@ class PrimaryPlotWidget(QWidget):
 
     params = {
         0: {
-            'xlim': [0.01, 6]
+            '11': {
+                'title': 'Вносимые потери',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 6],
+                'ylabel': 'αпот., дБ',
+                'ylim': []
+            },
+            '12': {
+                'title': 'Ошибка для состояния',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 6],
+                'ylabel': 'Аош',
+                'ylim': []
+            },
+            '21': {
+                'title': f'Входные обратные потери',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 6],
+                'ylabel': 'S11, дБ',
+                'ylim': []
+            },
+            '22': {
+                'title': 'Выходные обратные потери',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 6],
+                'ylabel': 'S22, дБ',
+                'ylim': []
+            }
         },
         1: {
-            'xlim': [0.01, 12]
+            '11': {
+                'title': 'Вносимые потери',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 12],
+                'ylabel': 'αпот., дБ',
+                'ylim': []
+            },
+            '12': {
+                'title': 'Ошибка для состояния',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 12],
+                'ylabel': 'Аош',
+                'ylim': []
+            },
+            '21': {
+                'title': f'Входные обратные потери',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 12],
+                'ylabel': 'S11, дБ',
+                'ylim': []
+            },
+            '22': {
+                'title': 'Выходные обратные потери',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 12],
+                'ylabel': 'S22, дБ',
+                'ylim': []
+            }
         },
+        # TODO adjust params for new device
         2: {
-            'xlim': [0.01, 12]
-        }
+            '11': {
+                'title': 'Вносимые потери',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 12],
+                'ylabel': 'αпот., дБ',
+                'ylim': []
+            },
+            '12': {
+                'title': 'Ошибка для состояния',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 12],
+                'ylabel': 'Аош',
+                'ylim': []
+            },
+            '21': {
+                'title': f'Входные обратные потери',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 12],
+                'ylabel': 'S11, дБ',
+                'ylim': []
+            },
+            '22': {
+                'title': 'Выходные обратные потери',
+                'xlabel': 'Частота, ГГц',
+                'xlim': [0.01, 12],
+                'ylabel': 'S22, дБ',
+                'ylim': []
+            }
+        },
     }
 
     def __init__(self, parent=None, domain=None):
@@ -40,38 +122,22 @@ class PrimaryPlotWidget(QWidget):
 
         self._init()
 
-    def _init(self, dev_id=1):
-        # self._plot11.set_tight_layout(True)
-        self._plot11.subplots_adjust(bottom=0.150)
-        self._plot11.set_title('Вносимые потери')
-        self._plot11.set_xlabel('Частота, ГГц', labelpad=-2)
-        self._plot11.set_ylabel('αпот., дБ', labelpad=-2)
-        self._plot11.set_xlim(self.params[dev_id]['xlim'][0], self.params[dev_id]['xlim'][1])
-        self._plot11.grid(b=True, which='major', color='0.5', linestyle='-')
+    def _init(self, dev_id=0):
 
-        # self._plot22.set_tight_layout(True)
-        self._plot12.subplots_adjust(bottom=0.150)
-        self._plot12.set_title('Ошибка для состояния')
-        self._plot12.set_xlabel('Частота, ГГц', labelpad=-2)
-        self._plot12.set_ylabel('Аош', labelpad=-2)
-        self._plot12.set_xlim(self.params[dev_id]['xlim'][0], self.params[dev_id]['xlim'][1])
-        self._plot12.grid(b=True, which='major', color='0.5', linestyle='-')
+        def setup_plot(plot, pars: dict):
+            # plot.set_tight_layout(True)
+            plot.subplots_adjust(bottom=0.150)
+            plot.set_title(pars['title'])
+            plot.set_xlabel(pars['xlabel'], labelpad=-2)
+            plot.set_ylabel(pars['ylabel'], labelpad=-2)
+            plot.set_xlim(pars['xlim'][0], pars['xlim'][1])
+            # plot.set_ylim(pars['ylim'][0], pars['ylim'][1])
+            plot.grid(b=True, which='major', color='0.5', linestyle='-')
 
-        # self._plot21.set_tight_layout(True)
-        self._plot21.subplots_adjust(bottom=0.150)
-        self._plot21.set_title(f'Входные обратные потери')
-        self._plot21.set_xlabel('Частота, ГГц', labelpad=-2)
-        self._plot21.set_ylabel('S11, дБ', labelpad=-2)
-        self._plot12.set_xlim(self.params[dev_id]['xlim'][0], self.params[dev_id]['xlim'][1])
-        self._plot21.grid(b=True, which='major', color='0.5', linestyle='-')
-
-        # self._plot22.set_tight_layout(True)
-        self._plot22.subplots_adjust(bottom=0.150)
-        self._plot22.set_title('Выходные обратные потери')
-        self._plot22.set_xlabel('Частота, ГГц', labelpad=-2)
-        self._plot22.set_ylabel('S22, дБ', labelpad=-2)
-        self._plot12.set_xlim(self.params[dev_id]['xlim'][0], self.params[dev_id]['xlim'][1])
-        self._plot22.grid(b=True, which='major', color='0.5', linestyle='-')
+        setup_plot(self._plot11, self.params[dev_id]['11'])
+        setup_plot(self._plot12, self.params[dev_id]['12'])
+        setup_plot(self._plot21, self.params[dev_id]['21'])
+        setup_plot(self._plot22, self.params[dev_id]['22'])
 
     def clear(self):
         self._plot11.clear()
