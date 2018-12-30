@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         self._ui.bgrpDevice = QButtonGroup(parent=self)
         self._ui.bgrpDevice.addButton(self._ui.radioPm1u, id=0)
         self._ui.bgrpDevice.addButton(self._ui.radioPm2u, id=1)
-        self._ui.bgrpDevice.addButton(self._ui.radioButton_3, id=2)   # TODO change to the device name
+        self._ui.bgrpDevice.addButton(self._ui.radioAmp, id=2)   # TODO change to the device name
 
         self._init()
 
@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
     def _setBgrpDeviceEnabled(self, state: bool):
         self._ui.radioPm1u.setEnabled(state)
         self._ui.radioPm2u.setEnabled(state)
-        self._ui.radioButton_3.setEnabled(state)
+        self._ui.radioAmp.setEnabled(state)
 
     def _modeBeforeConnect(self):
         self._ui.btnContinue.setVisible(False)
