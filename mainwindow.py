@@ -159,8 +159,8 @@ class MainWindow(QMainWindow):
     def on_measurementFinished(self):
         print('plotting stats')
         try:
-            self._ui.primaryPlots.plot(self._ui.bgrpDevice.checkedId())   # TODO 11,12 -- 12GHz limit
-            self._ui.secondaryPlots.plot(self._ui.bgrpDevice.checkedId())   # TODO 11, 12 -- 12GHZ limit
+            self._ui.primaryPlots.plot(self._ui.bgrpDevice.checkedId())
+            self._ui.secondaryPlots.plot(self._ui.bgrpDevice.checkedId())
         except Exception as ex:
             print(ex)
         self._modeAfterMeasure()
