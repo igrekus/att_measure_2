@@ -126,10 +126,16 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot()
     def on_btnCheck_clicked(self):
-        if not self._domain.check():
-            QMessageBox.information(self, 'Ошибка',
-                                    'Образец не найден, проверьте стенд.')
-            return False
+        if self._ui.bgrpDevice.checkedId() in [0, 1]:
+            if not self._domain.check(-25):
+                QMessageBox.information(self, 'Ошибка',
+                                        'Образец не найден, проверьте стенд.')
+                return False
+        elif self._ui.bgrpDevice.checkedId() == 2:
+            if not self._domain.check(-25):
+                QMessageBox.information(self, 'Ошибка',
+                                        'Образец не найден, проверьте стенд.')
+                return False
         self._modeBeforeMeasure()
 
     @pyqtSlot()

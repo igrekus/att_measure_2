@@ -43,17 +43,17 @@ class SecondaryPlotWidget(QWidget):
         # TODO adjust params for new device
         2: {
             '11': {
-                'title': 'Вносимые потери',
+                'title': 'Нормализованный коэффициент усиления',
                 'xlabel': 'Частота, ГГц',
                 'xlim': [0.01, 12],
-                'ylabel': 'αпот.н, дБ',
+                'ylabel': 'Kур.н., дБ',
                 'ylim': []
             },
             '12': {
-                'title': 'Ошибка для состояния',
+                'title': 'Амплитудная ошибка',
                 'xlabel': 'Частота, ГГц',
                 'xlim': [0.01, 12],
-                'ylabel': 'αпот, дБ',
+                'ylabel': 'Аош., дБ',
                 'ylim': []
             }
         }

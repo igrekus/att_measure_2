@@ -78,10 +78,9 @@ class Domain(QObject):
         print('find instruments')
         return self._instruments.find()
 
-    def check(self):
+    def check(self, threshold_level: float):
         print('check sample presence')
 
-        pass_threshold = -90
         points = 51
         data = self._instruments.test_sample(points=points).split(',')
         print(len(data))
@@ -89,7 +88,7 @@ class Domain(QObject):
 
         print(f'>>> avg level: {avg}')
 
-        return avg > pass_threshold
+        return avg > threshold_level
 
     def measure(self, device_id):
         print(f'run measurement {device_id}')
