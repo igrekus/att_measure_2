@@ -212,8 +212,6 @@ class InstrumentController:
         return self._analyzer.calc_formatted_data(chan=chan)
 
     def measure(self, device_id):
-        time.sleep(1)
-
         chan = 1
         port = 1
         window = 1
