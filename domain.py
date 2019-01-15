@@ -4,7 +4,7 @@ from itertools import repeat
 import numpy
 from PyQt5.QtCore import QObject, QRunnable, QThreadPool, pyqtSignal
 
-from instrumentcontroller import InstrumentController
+from instrumentcontroller import InstrumentController, is_mock
 
 
 class MeasureContext:
@@ -87,7 +87,10 @@ class Domain(QObject):
 
         print(f'>>> avg level: {avg}')
 
-        return avg > threshold_level
+        if is_mock:
+            return avg > -90
+        else:
+            return avg > threshold_level
 
     def measure(self, device_id):
         print(f'run measurement {device_id}')
