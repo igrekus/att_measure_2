@@ -83,7 +83,6 @@ class Domain(QObject):
 
         points = 51
         data = self._instruments.test_sample(points=points).split(',')
-        print(len(data))
         avg = reduce(lambda a, b: a + b, map(float, data), 0) / points
 
         print(f'>>> avg level: {avg}')
