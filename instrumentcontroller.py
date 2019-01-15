@@ -4,9 +4,15 @@ import serial
 
 is_mock = True
 
+prepare_bits = None
+
 
 def invert_bits(value):
     return value ^ 0b111111
+
+
+def forward_bits(value):
+    return value
 
 
 def parse_measure_string(string: str):
@@ -76,6 +82,7 @@ class InstrumentController:
 
         self._programmer = None
         self._analyzer = None
+        self._prepare_bits = None
 
         self.points = 51
 
@@ -119,6 +126,7 @@ class InstrumentController:
         if is_mock:
             from arduino.arduinoparallelmock import ArduinoParallelMock
             self._programmer = ArduinoParallelMock()
+            self._prepare_bits = invert_bits
             return
 
         port = self._find_parallel_port()
@@ -126,6 +134,7 @@ class InstrumentController:
             from arduino.arduinoparallel import ArduinoParallel
             self._programmer = ArduinoParallel(port=port, baudrate=9600, parity=serial.PARITY_NONE, bytesize=8,
                                                stopbits=serial.STOPBITS_ONE, timeout=0.5)
+            self._prepare_bits = invert_bits
             return
 
         port = self._find_spi_port()
@@ -133,6 +142,7 @@ class InstrumentController:
             from arduino.arduinospi import ArduinoSpi
             self._programmer = ArduinoSpi(port=port, baudrate=115200, parity=serial.PARITY_NONE, bytesize=8,
                                           stopbits=serial.STOPBITS_ONE, timeout=1)
+            self._prepare_bits = forward_bits
 
     def _find_analyzer(self):
         if is_mock:
@@ -179,7 +189,7 @@ class InstrumentController:
         range_ = 1
         self.points = 51
 
-        self._programmer.set_lpf_code(invert_bits(0b100000))
+        self._programmer.set_lpf_code(self._prepare_bits(0b100000))
         self._analyzer.reset()
         # MMEMory:LOAD:CSARchive\s"D:/Vysotka29_ATT/1324MP.csa"
         self._analyzer.calib_import_device_state(f'D:/Vysotka29_ATT/1324MP.csa')
@@ -212,8 +222,6 @@ class InstrumentController:
         return self._analyzer.calc_formatted_data(chan=chan)
 
     def measure(self, device_id):
-        time.sleep(1)
-
         chan = 1
         port = 1
         window = 1
@@ -262,7 +270,7 @@ class InstrumentController:
 
         cds = list(self.codes[device_id].values())
         for code in range(64):
-            self._programmer.set_lpf_code(invert_bits(code))
+            self._programmer.set_lpf_code(self._prepare_bits(code))
 
             self._analyzer.trigger_initiate()
             self._analyzer.wait()
