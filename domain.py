@@ -32,7 +32,7 @@ class Task(QRunnable):
 
     def run(self):
         self.fn(*self.args, **self.kwargs)
-        self.end()
+        self.end(*self.args, **self.kwargs)
 
 
 class Domain(QObject):
@@ -100,10 +100,10 @@ class Domain(QObject):
     def _measureFunc(self, device_id):
         print('start measurement task')
         self.device_id = device_id
-        self.s21s, self.s11s, self.s22s, self._result_att_all = self._instruments.measure(device_id)
+        self._result_baseline, self.s21s, self.s11s, self.s22s, self._result_att_all = self._instruments.measure(device_id)
         print('end measurement task')
 
-    def _processingFunc(self):
+    def _processingFunc(self, device_id):
         print('processing stats')
         # gen freq data
         # TODO: read off PNA
@@ -113,7 +113,9 @@ class Domain(QObject):
         self._result_freqs = list(map(lambda x: x/1_000_000_000, self._result_freqs))
 
         # calc baseline
-        self._result_baseline = self.s21s[0]
+        # print(device_id)
+        # print(len(self.s21s))
+        # self._result_baseline = self.s21s[15] if device_id == 2 else self.s21s[0]
 
         # calc S11, S22
         self._result_s11 = self.s11s

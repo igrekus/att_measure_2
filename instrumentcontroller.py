@@ -269,6 +269,14 @@ class InstrumentController:
         s21s_all = list()
 
         cds = list(self.codes[device_id].values())
+
+        # TODO HACK select baseline for device
+        base_code = 14 if device_id == 2 else 0
+        self._programmer.set_lpf_code(self._prepare_bits(base_code))
+        self._analyzer.trigger_initiate()
+        self._analyzer.wait()
+        baseline = parse_measure_string(self._measure_point(chan, s21_name))
+
         for code in range(64):
             self._programmer.set_lpf_code(self._prepare_bits(code))
 
@@ -290,7 +298,7 @@ class InstrumentController:
                 self._analyzer.wait()
                 s22s.append(parse_measure_string(self._measure_point(chan, s22_name)))
 
-        return s21s, s11s, s22s, s21s_all
+        return baseline, s21s, s11s, s22s, s21s_all
 
     @property
     def analyzer_addr(self):
