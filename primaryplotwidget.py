@@ -71,7 +71,7 @@ class PrimaryPlotWidget(QWidget):
         # TODO adjust params for new device
         2: {
             '11': {
-                'title': 'К-т усиления при мин. ослаблении',
+                'title': 'К-т усиления',
                 'xlabel': 'Частота, ГГц',
                 'xlim': [0.01, 12],
                 'ylabel': 'Kур., дБ',
@@ -133,6 +133,7 @@ class PrimaryPlotWidget(QWidget):
             plot.set_xlim(pars['xlim'][0], pars['xlim'][1])
             # plot.set_ylim(pars['ylim'][0], pars['ylim'][1])
             plot.grid(b=True, which='major', color='0.5', linestyle='-')
+            plot.tight_layout()
 
         setup_plot(self._plot11, self.params[dev_id]['11'])
         setup_plot(self._plot12, self.params[dev_id]['12'])
