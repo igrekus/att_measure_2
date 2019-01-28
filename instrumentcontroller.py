@@ -2,7 +2,7 @@ import time
 import serial
 
 
-is_mock = True
+is_mock = False
 
 prepare_bits = None
 
